@@ -1,0 +1,28 @@
+program: train_cifar10.py
+method: grid
+parameters:
+  lr:
+    values: [3e-2,1e-1,1e-2]
+  lr_ratio:
+    values: [0]
+  batch_size:
+    values: [512]
+  epochs:
+    values: [100]
+  damping:
+    values: [0.001]
+  optim:
+    values: ['kfac_mc']
+  interval:
+    values: [1]
+  kl_clip:
+    values: [1]
+  weight_decay:
+    values: [0]
+  wandb:
+    values: [True]
+command:
+  - ${env}
+  - python
+  - ${program}
+  - ${args_no_boolean_flags}

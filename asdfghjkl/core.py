@@ -9,7 +9,7 @@ from .operations import *
 from .matrices import *
 from .vector import ParamVector
 
-_supported_module_classes = (nn.Linear, nn.Conv2d, nn.BatchNorm1d, nn.BatchNorm2d, nn.LayerNorm, nn.Embedding, Bias, Scale)
+_supported_module_classes = (nn.Linear, nn.Conv2d,nn.ConvTranspose2d, nn.BatchNorm1d, nn.BatchNorm2d, nn.LayerNorm, nn.Embedding, Bias, Scale)
 
 
 __all__ = ['extend', 'no_centered_cov', 'save_inputs_outgrads', 'save_inputs', 'save_outgrads',

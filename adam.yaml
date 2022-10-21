@@ -1,0 +1,26 @@
+program: train_celeba.py
+method: grid
+parameters:
+  lr:
+    values: [3e-5,1e-4]
+  lr_ratio:
+    values: [0]
+  batch_size:
+    values: [64]
+  epochs:
+    values: [100]
+  damping:
+    values: [0.001]
+  optim:
+    values: ['adam']
+  kl_clip:
+    values: [1]
+  weight_decay:
+    values: [0]
+  wandb:
+    values: [True]
+command:
+  - ${env}
+  - python
+  - ${program}
+  - ${args_no_boolean_flags}

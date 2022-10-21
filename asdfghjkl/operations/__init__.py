@@ -2,6 +2,7 @@ import warnings
 from .operation import *
 from .linear import Linear
 from .conv import Conv2d
+from .convtranspose import ConvTranspose2d
 from .batchnorm import BatchNorm1d, BatchNorm2d
 from .layernorm import LayerNorm
 from .embedding import Embedding
@@ -11,6 +12,7 @@ from .scale import Scale, ScaleExt
 __all__ = [
     'Linear',
     'Conv2d',
+    'ConvTranspose2d',
     'BatchNorm1d',
     'BatchNorm2d',
     'LayerNorm',
@@ -53,12 +55,13 @@ __all__ = [
     'OperationContext'
 ]
 
-
 def get_op_class(module):
     if isinstance(module, nn.Linear):
         return Linear
     elif isinstance(module, nn.Conv2d):
         return Conv2d
+    elif isinstance(module, nn.ConvTranspose2d):
+        return ConvTranspose2d
     elif isinstance(module, nn.BatchNorm1d):
         return BatchNorm1d
     elif isinstance(module, nn.BatchNorm2d):
