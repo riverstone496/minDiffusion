@@ -1,7 +1,7 @@
 import torch
 from torch import nn
 
-from ..utils import im2col_transpose_2d,im2col_2d
+from ..utils import im2col_2d,im2col_transpose_2d
 from .operation import Operation
 
 
@@ -19,9 +19,10 @@ class ConvTranspose2d(Operation):
     out_size = output feature map size
     """
     @staticmethod
-    def preprocess_out_grads(module, in_grads, out_grads):
+    def preprocess_in_data(module, in_data, out_data):
         # n x c x h_in x w_in -> n x c(kh)(kw) x (h_out)(w_out)
-        return im2col_transpose_2d(out_grads, module)
+        #return im2col_transpose_2d(in_data, module)
+        return in_data.flatten(start_dim=2)
 
     @staticmethod
     def extend_in_data(in_data):
@@ -36,7 +37,8 @@ class ConvTranspose2d(Operation):
     @staticmethod
     def preprocess_out_grads(module, out_grads):
         # n x c x h_out x w_out -> n x c x (h_out)(w_out)
-        return out_grads.flatten(start_dim=2)
+        #return out_grads.flatten(start_dim=2)
+        return im2col_transpose_2d(out_grads, module)
 
     @staticmethod
     def batch_grads_weight(

@@ -517,6 +517,7 @@ class Kron:
         mat_A = self.A_inv if use_inv else self.A
         mat_B = self.B_inv if use_inv else self.B
         vec_weight_2d = vec_weight.view(self.B_dim, -1)
+        
         mvp_w = mat_B.mm(vec_weight_2d).mm(mat_A).view_as(vec_weight)
         if inplace:
             vec_weight.copy_(mvp_w)

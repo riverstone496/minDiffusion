@@ -80,7 +80,8 @@ def train_cifar10(
                                             damping=args.damping,
                                             upd_inv_interval=args.interval,
                                             upd_curvature_interval=args.interval,
-                                            loss_type=LOSS_MSE)
+                                            loss_type=LOSS_MSE,
+                                            ignore_modules=[nn.ConvTranspose2d])
         grad_maker = asdl.KfacGradientMaker(ddpm, config)
     elif args.optim == OPTIM_SMW_NGD:
         config = asdl.SmwEmpNaturalGradientConfig(data_size=args.batch_size,
@@ -134,6 +135,7 @@ def train_cifar10(
             dummy_y = grad_maker.setup_model_call(ddpm, x)
             grad_maker.setup_loss_repr(dummy_y)
             loss = grad_maker.forward_and_backward()
+            loss = ddpm(x)
 
             if loss_ema is None:
                 loss_ema = loss.item()
@@ -163,12 +165,14 @@ def train_cifar10(
                 optim.zero_grad()
                 x = x.to(device)
                 test_loss += ddpm(x)
-
+                
         test_loss /= len(test_dataloader.dataset)
+        pbar.set_description(f"loss: {test_loss:.4f}")
         if args.wandb:
             log = {'epoch': i,
                    'test_loss': test_loss}
             wandb.log(log)
+            print(log)
 
         with torch.no_grad():
             xh = ddpm.sample(8, (3, 32, 32), device)
@@ -193,7 +197,7 @@ if __name__ == "__main__":
                         help='input batch size for training (default: 64)')
     parser.add_argument('--epochs', type=int, default=100,
                         help='number of epochs to train (default: 14)')
-    parser.add_argument('--lr', type=float, default=1e-5,
+    parser.add_argument('--lr', type=float, default=1e-2,
                         help='learning rate')
     parser.add_argument('--lr_ratio', type=float, default=1,
                         help='learning rate')
@@ -205,8 +209,8 @@ if __name__ == "__main__":
     parser.add_argument('--interval', type=int, default=10,
                         help='learning rate')
     parser.add_argument('--weight_decay', type=float, default=0)
-    parser.add_argument('--optim', default=OPTIM_ADAM)
-    parser.add_argument('--damping', type=float, default=1e-3)
+    parser.add_argument('--optim', default=OPTIM_KFAC_MC)
+    parser.add_argument('--damping', type=float, default=1e-6)
     parser.add_argument('--kl_clip', type=float, default=1,
                         help='kl_clip')
     parser.add_argument('--seed', type=int, default=1,
@@ -216,5 +220,5 @@ if __name__ == "__main__":
 
     args = parser.parse_args()
     assert torch.cuda.is_available()
-
+    print(args)
     train_cifar10(n_epoch=args.epochs)
